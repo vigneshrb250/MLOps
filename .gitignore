@@ -42,7 +42,7 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-docker-compose.yaml
+# docker-compose.yaml
 *.sav
 logs/
 working_data/

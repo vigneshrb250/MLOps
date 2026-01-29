@@ -13,7 +13,7 @@ def load_data():
         str: Base64-encoded serialized data (JSON-safe).
     """
     print("We are here")
-    df = pd.read_csv(os.path.join(os.path.dirname(__file__), "../data/file.csv"))
+    df = pd.read_csv(os.path.join(os.path.dirname(__file__), "../data/mall_customers.csv"))
     serialized_data = pickle.dumps(df)                    # bytes
     return base64.b64encode(serialized_data).decode("ascii")  # JSON-safe string
 
@@ -27,7 +27,9 @@ def data_preprocessing(data_b64: str):
     df = pickle.loads(data_bytes)
 
     df = df.dropna()
-    clustering_data = df[["BALANCE", "PURCHASES", "CREDIT_LIMIT"]]
+    # clustering_data = df[["BALANCE", "PURCHASES", "CREDIT_LIMIT"]]
+    clustering_data = df[["Age", "Annual Income (k$)", "Spending Score (1-100)"]]
+
 
     min_max_scaler = MinMaxScaler()
     clustering_data_minmax = min_max_scaler.fit_transform(clustering_data)
@@ -77,7 +79,8 @@ def load_model_elbow(filename: str, sse: list):
     print(f"Optimal no. of clusters: {kl.elbow}")
 
     # predict on raw test data (matches your original code)
-    df = pd.read_csv(os.path.join(os.path.dirname(__file__), "../data/test.csv"))
+    df = pd.read_csv(os.path.join(os.path.dirname(__file__), "../data/mall_test.csv"))
+    df = df[["Age", "Annual Income (k$)", "Spending Score (1-100)"]]
     pred = loaded_model.predict(df)[0]
 
     # ensure JSON-safe return

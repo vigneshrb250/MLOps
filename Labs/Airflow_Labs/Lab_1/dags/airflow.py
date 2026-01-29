@@ -1,7 +1,8 @@
 # Import necessary libraries and modules
 from airflow import DAG
 # from airflow.operators.python import PythonOperator
-from airflow.providers.standard.operators.python import PythonOperator
+# from airflow.providers.standard.operators.python import PythonOperator
+from airflow.operators.python import PythonOperator
 from datetime import datetime, timedelta
 from src.lab import load_data, data_preprocessing, build_save_model, load_model_elbow
 
@@ -20,7 +21,7 @@ default_args = {
 
 # Create a DAG instance named 'Airflow_Lab1' with the defined default arguments
 with DAG(
-    'Airflow_Lab1',
+    'Airflow_Lab1_Vignesh',
     default_args=default_args,
     description='Dag example for Lab 1 of Airflow series',
     catchup=False,

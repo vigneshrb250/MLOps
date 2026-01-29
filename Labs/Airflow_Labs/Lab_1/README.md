@@ -1,5 +1,26 @@
 # Airflow lab
 
+---
+
+## Submission Notes (Vignesh)
+
+This fork contains minor modifications for submission:
+
+- Updated the DAG name to: `Airflow_Lab1_Vignesh`
+- Added a new dataset **without modifying the original dataset files**
+  - Train dataset: `dags/data/mall_customers.csv`
+  - Test dataset: `dags/data/mall_test.csv`
+- Updated the `PythonOperator` import for compatibility with Apache Airflow `2.9.2`:
+  - `from airflow.operators.python import PythonOperator`
+- The workflow was executed successfully in the Airflow UI and the output log prints:
+  - `Optimal no. of clusters: <k>`
+
+> Note: The `mall_test.csv` file includes the required header and contains the same feature columns used for training:
+> `Age`, `Annual Income (k$)`, `Spending Score (1-100)`.
+
+---
+
+
 - In order to install Airflow using docker you can watch our [Airflow Lab1 Tutorial Video](https://youtu.be/exFSeGUbn4Q?feature=shared)
 - For latest step-by-step instructions, check out this blog - [AirFlow Lab-1](https://www.mlwithramin.com/blog/airflow-lab1)
 
