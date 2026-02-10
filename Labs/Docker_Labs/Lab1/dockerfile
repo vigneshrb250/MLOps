@@ -4,11 +4,17 @@ FROM python:3.10
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the model training script into the container
-COPY src/ .
+# Copy requirements first (for better Docker layer caching)
+COPY src/requirements.txt .
 
-# Install Scikit-Learn and joblib
-RUN pip install -r requirements.txt
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Run the script when the container launches
+# Copy the model training and serving script into the container
+COPY src/main.py .
+
+# Expose port 5000 for the Flask API
+EXPOSE 5000
+
+# Run the script when the container launches (trains + serves)
 CMD ["python", "main.py"]
