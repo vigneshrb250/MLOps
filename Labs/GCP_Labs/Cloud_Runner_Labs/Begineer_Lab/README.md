@@ -1,3 +1,41 @@
+## Submission Notes - Vignesh Ramaswamy Balasundaram(Modified Lab)
+
+### What I changed from the original template
+This submission is a modified version of the Cloud Run Beginner Lab. Instead of deploying a basic “Hello World” Flask app, I built and deployed a **Song Recommendation API** that returns similar songs using **cosine similarity** over Spotify audio features. This makes the lab output and code clearly different from the provided repository.
+
+### What I built
+A containerized **song similarity recommender** that:
+- Loads a Spotify audio-features dataset (~113,999 songs)
+- Standardizes numeric features (danceability, energy, tempo, etc.)
+- Computes cosine similarity to recommend top-K similar tracks
+- Exposes REST endpoints for search + recommendations
+
+### Endpoints added
+- `GET /` — Service metadata (includes indexed song count)
+- `GET /search?q=<keyword>` — Search songs by track name or artist
+- `GET /recommend?song=<name>&artist=<artist>&k=<number>` — Top-K similar songs
+- `GET /health` — Health check
+
+### Deployment details (per lab instructions: Container Registry → Cloud Run)
+- Project: `cloudrun-lab1`
+- Region: `us-central1`
+- Image: `gcr.io/cloudrun-lab1/songrec`
+- Cloud Run URL: `https://songrec-328640021260.us-central1.run.app`
+
+### Quick test commands
+```bash
+curl "https://songrec-328640021260.us-central1.run.app/"
+curl "https://songrec-328640021260.us-central1.run.app/search?q=blinding%20lights"
+curl "https://songrec-328640021260.us-central1.run.app/recommend?song=Blinding%20Lights&artist=The%20Weeknd&k=10"
+
+## Screenshots
+
+### Cloud Run Deployment
+![Cloud Run](screenshots\cloudrun_deployment.png)
+
+### Recommendation Output
+![Recommend Output](screenshots/deployment_test.png)
+
 # Cloud Runner Basic Lab
 
 Welcome to the beginners lab on Google Cloud Run! In this lab, you will learn to deploy a containerized application on Google Cloud Run, monitor its performance, and scale it based on traffic needs.

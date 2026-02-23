@@ -1,8 +1,16 @@
-FROM python:3.8-slim
+FROM python:3.11-slim
 
 WORKDIR /app
-COPY . /app
-RUN pip install flask
 
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+# Build embeddings index from local dataset
+RUN python build_index.py
+
+ENV PORT=8080
 EXPOSE 8080
-CMD ["python", "app.py"]
+
+CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 app:app
