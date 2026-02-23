@@ -25,7 +25,7 @@ A containerized **song similarity recommender** that:
 ## Screenshots
 
 ### Cloud Run Deployment
-![Cloud Run](screenshots\cloudrun_deployment.png)
+![Cloud Run](screenshots/cloudrun_deployment.png)
 
 ### Recommendation Output
 ![Recommend Output](screenshots/deployment_test.png)
