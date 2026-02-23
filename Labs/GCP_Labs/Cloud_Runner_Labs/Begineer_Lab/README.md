@@ -22,12 +22,6 @@ A containerized **song similarity recommender** that:
 - Image: `gcr.io/cloudrun-lab1/songrec`
 - Cloud Run URL: `https://songrec-328640021260.us-central1.run.app`
 
-### Quick test commands
-```bash
-curl "https://songrec-328640021260.us-central1.run.app/"
-curl "https://songrec-328640021260.us-central1.run.app/search?q=blinding%20lights"
-curl "https://songrec-328640021260.us-central1.run.app/recommend?song=Blinding%20Lights&artist=The%20Weeknd&k=10"
-
 ## Screenshots
 
 ### Cloud Run Deployment
@@ -35,6 +29,14 @@ curl "https://songrec-328640021260.us-central1.run.app/recommend?song=Blinding%2
 
 ### Recommendation Output
 ![Recommend Output](screenshots/deployment_test.png)
+
+
+### Quick test commands
+```bash
+curl "https://songrec-328640021260.us-central1.run.app/"
+curl "https://songrec-328640021260.us-central1.run.app/search?q=blinding%20lights"
+curl "https://songrec-328640021260.us-central1.run.app/recommend?song=Blinding%20Lights&artist=The%20Weeknd&k=10"
+
 
 # Cloud Runner Basic Lab
 
