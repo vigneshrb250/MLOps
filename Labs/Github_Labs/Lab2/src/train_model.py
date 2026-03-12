@@ -17,7 +17,7 @@ if __name__ == '__main__':
     timestamp = args.timestamp
     print(f"Timestamp received from GitHub Actions: {timestamp}")
 
-    df = pd.read_csv("Labs/Github_Labs/Lab2/data/sleep_health_lifestyle.csv")
+    df = pd.read_csv("Labs/Github_Labs/Lab2/data/Sleep_health_and_lifestyle_dataset.csv")
     df.drop(columns=["Person ID"], errors="ignore", inplace=True)
     df["Sleep Disorder"] = df["Sleep Disorder"].fillna("No Disorder")
 
