@@ -12,14 +12,14 @@ if __name__ == '__main__':
 
     model_version = f"model_{timestamp}_rf_model"
     try:
-        model = joblib.load(f"{model_version}.joblib")
+        model = joblib.load(f"Labs/Github_Labs/Lab2/models/model_{timestamp}_rf_model.joblib")
     except:
         raise ValueError("Failed to load the latest model")
 
     try:
-        with open("data/data.pickle", "rb") as f:
+        with open("Labs/Github_Labs/Lab2/data/data.pickle", "rb") as f:
             X = pickle.load(f)
-        with open("data/target.pickle", "rb") as f:
+        with open("Labs/Github_Labs/Lab2/data/target.pickle", "rb") as f:
             y = pickle.load(f)
     except:
         raise ValueError("Failed to load data")

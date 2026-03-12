@@ -17,7 +17,7 @@ if __name__ == '__main__':
     timestamp = args.timestamp
     print(f"Timestamp received from GitHub Actions: {timestamp}")
 
-    df = pd.read_csv("data/sleep_health_lifestyle.csv")
+    df = pd.read_csv("Labs/Github_Labs/Lab2/data/sleep_health_lifestyle.csv")
     df.drop(columns=["Person ID"], errors="ignore", inplace=True)
     df["Sleep Disorder"] = df["Sleep Disorder"].fillna("No Disorder")
 
@@ -37,12 +37,12 @@ if __name__ == '__main__':
     X = df.drop(columns=["Sleep Disorder"]).values
     y = df["Sleep Disorder"].values
 
-    os.makedirs("data", exist_ok=True)
-    with open("data/data.pickle", "wb") as f:
+    os.makedirs("Labs/Github_Labs/Lab2/data", exist_ok=True)
+    with open("Labs/Github_Labs/Lab2/data/data.pickle", "wb") as f:
         pickle.dump(X, f)
-    with open("data/target.pickle", "wb") as f:
+    with open("Labs/Github_Labs/Lab2/data/target.pickle", "wb") as f:
         pickle.dump(y, f)
-    np.save("data/target_classes.npy", le_target.classes_)
+    np.save("Labs/Github_Labs/Lab2/data/target_classes.npy", le_target.classes_)
 
     mlflow.set_tracking_uri("./mlruns")
     dataset_name = "Sleep Health and Lifestyle"
@@ -88,7 +88,7 @@ if __name__ == '__main__':
             "F1_Score": f1_score(test_y, y_predict, average="weighted")
         })
 
-        os.makedirs("models", exist_ok=True)
-        model_filename = f"model_{timestamp}_rf_model.joblib"
+        os.makedirs("Labs/Github_Labs/Lab2/models", exist_ok=True)
+        model_filename = f"Labs/Github_Labs/Lab2/models/model_{timestamp}_rf_model.joblib"
         dump(forest, model_filename)
         print(f"Model saved: {model_filename}")
