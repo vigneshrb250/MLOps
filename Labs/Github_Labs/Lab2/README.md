@@ -1,3 +1,22 @@
+## Lab 2 - Submission Notes (Vignesh)
+This fork contains modifications from the original GitHub Actions Lab 2:
+* Replaced synthetic `make_classification` data with the real [Sleep Health and Lifestyle dataset](https://www.kaggle.com/datasets/uom190346a/sleep-health-and-lifestyle-dataset) (374 samples, 13 features, 3 target classes: Insomnia, No Disorder, Sleep Apnea)
+* Added data preprocessing pipeline:
+   * Categorical encoding for Gender, Occupation, and BMI Category using `LabelEncoder`
+   * Blood Pressure column split into `BP_Systolic` and `BP_Diastolic`
+   * Feature scaling using `StandardScaler`
+* Replaced bare `RandomForestClassifier` with a `Pipeline` + `GridSearchCV` for hyperparameter tuning:
+   * Tuned `n_estimators`, `max_depth`, `min_samples_split`, and `class_weight`
+   * 5-fold cross-validation with `f1_weighted` scoring
+* Enriched model evaluation metrics to include Accuracy, weighted F1 Score, and full per-class classification report
+* Fixed evaluation bug where original code generated new random data for evaluation instead of using the same data the model was trained on
+* Added `calibrate_model.py` which was missing from the original repo — applies isotonic regression calibration via `CalibratedClassifierCV` and saves the calibrated model separately
+* Updated `model_calibration.yml` to actually run calibration instead of just retraining the model again
+* Updated both workflow files from `actions/checkout@v2` and `setup-python@v2` to `@v4`
+
+---
+
+
 # Using GitHub Actions for Model Training and Versioning
 
 This repository demonstrates how to use GitHub Actions to automate the process of training a machine learning model, storing the model, and versioning it. This allows you to easily update and improve your model in a collaborative environment.
