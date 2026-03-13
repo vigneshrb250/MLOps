@@ -38,11 +38,8 @@ jobs:
         python Labs/Github_Labs/Lab2/src/calibrate_model.py --timestamp "$timestamp"
     - name: Store and Version the New Model
       run: |
-        model_filename="model_${timestamp}_rf_model.joblib"
-        calibrated_filename="model_${timestamp}_calibrated.joblib"
         mkdir -p Labs/Github_Labs/Lab2/models
-        mv "$model_filename" "Labs/Github_Labs/Lab2/models/$model_filename"
-        mv "$calibrated_filename" "Labs/Github_Labs/Lab2/models/$calibrated_filename"
+        echo "Models already saved to Labs/Github_Labs/Lab2/models by train and calibrate scripts"
     - name: Commit and Push Changes
       run: |
         git config --global user.email "vigneshrb250@gmail.com"
