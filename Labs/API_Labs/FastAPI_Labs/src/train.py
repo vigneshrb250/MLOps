@@ -1,19 +1,31 @@
-from sklearn.tree import DecisionTreeClassifier
+import os
 import joblib
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 from data import load_data, split_data
 
-def fit_model(X_train, y_train):
-    """
-    Train a Decision Tree Classifier and save the model to a file.
-    Args:
-        X_train (numpy.ndarray): Training features.
-        y_train (numpy.ndarray): Training target values.
-    """
-    dt_classifier = DecisionTreeClassifier(max_depth=3, random_state=12)
-    dt_classifier.fit(X_train, y_train)
-    joblib.dump(dt_classifier, "../model/iris_model.pkl")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MODEL_DIR = os.path.join(BASE_DIR, 'model')
+
+def train_recommender(X_train):
+    print("Vectorizing text data...")
+    tfidf = TfidfVectorizer(stop_words='english')
+    tfidf_matrix = tfidf.fit_transform(X_train)
+
+    print("Calculating similarity matrix...")
+    cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
+
+    print("Saving model artifacts...")
+    # Ensure the model directory exists
+    os.makedirs(MODEL_DIR, exist_ok=True)
+    
+    joblib.dump(cosine_sim, os.path.join(MODEL_DIR, "similarity_matrix.pkl"))
+    print("Training complete!")
 
 if __name__ == "__main__":
     X, y = load_data()
-    X_train, X_test, y_train, y_test = split_data(X, y)
-    fit_model(X_train, y_train)
+    
+    os.makedirs(MODEL_DIR, exist_ok=True)
+    joblib.dump(y.to_frame(), os.path.join(MODEL_DIR, "movie_list.pkl"))
+    
+    train_recommender(X)

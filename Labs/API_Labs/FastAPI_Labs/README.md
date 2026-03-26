@@ -5,6 +5,15 @@
 
 ---
 
+## Submission Notes (Vignesh)
+This repository contains significant modifications to the original lab for my submission:
+* **Domain Shift:** Converted the API from a basic Iris flower classifier to a **Content-Based Movie Recommendation System**.
+* **New Dataset:** Replaced the Iris dataset with the **TMDB 5000 Movies Dataset** (`data/tmdb_5000_movies.csv`).
+* **New ML Architecture:** Replaced the Decision Tree Classifier with **TF-IDF Vectorization** and **Cosine Similarity** to calculate content distances.
+* **API Modifications:** Updated the Pydantic schemas (`MovieRequest` and `RecommendationResponse`) to accept a movie title string and return a list of 5 similar movie titles. Added robust `os.path` routing to prevent directory errors.
+* **Added Frontend UI:** Created an interactive dashboard using Streamlit (`app.py`) to visually test the FastAPI endpoints.
+* **Execution:** The matrix was successfully calculated and the API successfully returns 200 OK statuses when queried from the Streamlit UI.
+
 ## Overview
 
 In this Lab, we will learn how to expose ML models as APIs using [FastAPI](https://fastapi.tiangolo.com/) and [uvicorn](https://www.uvicorn.org/).

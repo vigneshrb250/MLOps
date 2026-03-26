@@ -1,35 +1,30 @@
 from fastapi import FastAPI, status, HTTPException
 from pydantic import BaseModel
-from predict import predict_data
+from src.predict import predict_recommendations
+from typing import List
 
+app = FastAPI(title="Movie Recommender API")
 
-app = FastAPI()
+class MovieRequest(BaseModel):
+    movie_title: str
 
-class IrisData(BaseModel):
-    petal_length: float
-    sepal_length: float
-    petal_width: float
-    sepal_width: float
-
-class IrisResponse(BaseModel):
-    response:int
+class RecommendationResponse(BaseModel):
+    recommendations: List[str]
 
 @app.get("/", status_code=status.HTTP_200_OK)
 async def health_ping():
     return {"status": "healthy"}
 
-@app.post("/predict", response_model=IrisResponse)
-async def predict_iris(iris_features: IrisData):
+@app.post("/predict", response_model=RecommendationResponse)
+async def get_recommendations(request: MovieRequest):
     try:
-        features = [[iris_features.sepal_length, iris_features.sepal_width,
-                    iris_features.petal_length, iris_features.petal_width]]
-
-        prediction = predict_data(features)
-        return IrisResponse(response=int(prediction[0]))
+        recommendations = predict_recommendations(request.movie_title)
+        return RecommendationResponse(recommendations=recommendations)
     
+    except IndexError:
+        raise HTTPException(
+            status_code=404, 
+            detail=f"Movie '{request.movie_title}' not found in database."
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
-
-
-    
