@@ -1,0 +1,62 @@
+version: "3.8"
+
+services:
+
+  # ── Elasticsearch ──────────────────────────────────────────────────────────
+  # The database. Stores and indexes all log documents sent by Logstash.
+  # Port 9200 is the HTTP API — Logstash writes here, Kibana reads here.
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node        # Run as a single node (not a cluster)
+      - xpack.security.enabled=false      # Disable auth — easier for local dev
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m   # Limit memory to 512MB
+    ports:
+      - "9200:9200"
+    networks:
+      - elk
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ── Kibana ─────────────────────────────────────────────────────────────────
+  # The dashboard UI. Opens in your browser at http://localhost:5601
+  # Connects to Elasticsearch to query and visualize data.
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.12.0
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - elk
+
+  # ── Logstash ───────────────────────────────────────────────────────────────
+  # The pipeline. Reads training.log, parses it with grok, sends to Elasticsearch.
+  # We mount two files into the container:
+  #   1. logstash.conf  → the pipeline definition
+  #   2. training.log   → the log file to read
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.12.0
+    container_name: logstash
+    volumes:
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf  # our pipeline config
+      - ./training.log:/usr/share/logstash/logs/training.log        # our log file
+    environment:
+      - xpack.monitoring.enabled=false    # Disable monitoring to reduce noise
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - elk
+
+networks:
+  elk:
+    driver: bridge

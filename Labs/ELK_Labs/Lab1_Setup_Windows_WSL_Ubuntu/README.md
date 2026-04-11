@@ -1,180 +1,96 @@
-# ELK-Stack-Setup-in-Linux
+# ELK Stack - Heart Disease Model Monitoring
 
-Watch the toturial on how to Setup ELK on Windows WSL Ubuntu at [ELK installation](https://www.youtube.com/watch?v=UMjDYQO2lo0)
+This lab demonstrates an end-to-end MLOps observability pipeline using the ELK Stack (Elasticsearch, Logstash, Kibana) to monitor a Random Forest classifier trained on the Heart Disease dataset.
 
-=========================
-## Downloading:
+## Modifications from Original Lab
 
-### Elasticsearch: https://www.elastic.co/downloads/elasticsearch
+| Original | Modified |
+|----------|----------|
+| Iris dataset (toy) | Heart Disease - Cleveland UCI (real-world medical) |
+| Logistic Regression | Random Forest Classifier |
+| Single training run | Hyperparameter sweep over `n_estimators = [10, 50, 100, 200, 300, 500]` |
+| 3 metrics logged | 12 metrics logged per run |
+| Manual WSL Ubuntu setup | Docker Compose (Elasticsearch + Kibana + Logstash) |
 
-### Kibana: https://www.elastic.co/downloads/kibana
+## Dataset
 
-### Logstash: https://www.elastic.co/downloads/logstash
+**Heart Disease - Cleveland UCI** (`heart.csv`)
+- 1,025 samples, 13 features (age, cholesterol, resting BP, chest pain type, etc.)
+- Binary classification: `1 = heart disease present`, `0 = not present`
+- Source: [Kaggle - Heart Disease Dataset](https://www.kaggle.com/datasets/johnsmith88/heart-disease-dataset)
 
-### Java: https://www.oracle.com/java/technologies/downloads/
+## Model
 
-For elasticsearch version 8.12 you need to install Java version 21
+**Random Forest Classifier** (`sklearn.ensemble.RandomForestClassifier`)
 
-==========================
+Hyperparameter sweep over `n_estimators` to observe the tradeoff between model complexity and training time:
 
-## Moving the files
+| n_estimators | Training Time |
+|---|---|
+| 10  | ~0.07s |
+| 50  | ~0.12s |
+| 100 | ~0.18s |
+| 200 | ~0.41s |
+| 300 | ~0.87s |
+| 500 | ~1.29s |
 
-The files will be in Downloads you need to move it to Ubuntu.
+**Key insight**: Accuracy converges at 98.5% from as few as 10 trees, while training time increases 18x — demonstrating diminishing returns on n_estimators.
 
-To do that follow this step:
+## Metrics Logged Per Run
 
-Change the directory to Downloads first and then run this:
+- `accuracy`, `f1_score`, `precision`, `recall`
+- `true_positive`, `true_negative`, `false_positive`, `false_negative`
+- `false_positive_rate`, `false_negative_rate`
+- `training_time`, `n_estimators`
 
+Each run emits a `RUN_SUMMARY` log line containing all metrics — this creates one complete Elasticsearch document per run for Kibana visualizations.
+
+## Running the Pipeline
+
+### Prerequisites
+- Python 3.12+
+- Docker Desktop
+
+### 1. Install dependencies
 ```bash
-cd /mnt/c/Users/(username)/Downloads
+pip install pandas scikit-learn
 ```
 
-Move the tar files to Ubuntu:
-
+### 2. Train the model and generate logs
 ```bash
-sudo mv (name-of-the-files) /home
+python train_model.py
 ```
 
-=======================
-
-## Extracting:
-
-Change directory to Ubuntu:
-
+### 3. Start the ELK stack
 ```bash
-cd /home
+docker compose up -d
 ```
 
-Then extract them:
-
+### 4. Verify data in Elasticsearch
 ```bash
-sudo tar -xzvf (name-of-the-files)
+curl http://localhost:9200/heart-disease-training/_count
 ```
 
-==============================
-
-## Configure Environment Variables:
-
-```bash
-nano ~/.bashrc
+### 5. Open Kibana
+```
+http://localhost:5601
 ```
 
-Add this below and save them (Ctrl + S) and exit (Ctrl + X).
+Create a data view with index pattern `heart-disease-training` and timestamp `@timestamp`.
 
+## Kibana Dashboard
+
+Dashboard: **Heart Disease Model Monitoring**
+
+![Dashboard](dashboard.png)
+
+Charts:
+- **Training Time vs n_estimators** — shows how training cost scales with forest size
+- **F1 Score vs n_estimators** — shows accuracy plateaus early
+- **Accuracy vs n_estimators** — confirms diminishing returns
+- **False Negative Rate vs n_estimators** — critical for medical context (missed diagnoses)
+
+## Shutting Down
 ```bash
-export JAVA_HOME=/home/jdk-21.0.2
-
-export PATH=$JAVA_HOME/bin:$PATH
-```
-
-================================
-
-Now to run them in Ubuntu we need to grant permissions:
-
-```bash
-sudo chown -R ayush:ayush /home/(kibana-8.12.0) OR (elasticsearch-8.12.0) OR (logstash-8.12.0)
-```
-
-Here, ayush is the username.
-
-To add a new user, run this:
-
-```bash
-sudo adduser (username) 
-```
-
-Then run the above line.
-
-============================
-
-## Few steps to do before running the elk-stack:
-
-### Generate Kibana Enrollment Token:
-
-In a new terminal, navigate to the Elasticsearch bin directory:
-
-```bash
-cd path/to/elasticsearch/bin
-```
-
-Run the command:
-
-```bash
-./elasticsearch-create-enrollment-token --scope kibana
-```
-
-Copy and save the generated token.
-
-========================
-
-Enter Enrollment Token in Kibana:
-
-Paste the enrollment token into the Kibana configuration interface in your browser.
-
-========================
-
-### Reset Elasticsearch Password:
-
-In a new terminal, navigate to the Elasticsearch bin directory.
-
-Run the password reset command:
-
-```bash
-./elasticsearch-reset-password -u elastic
-```
-
-Note down the newly generated password.
-
-==============================
-
-## Running the stack:
-
-For elasticsearch go to this directory:
-
-```bash
-cd /home/elasticsearch-8.12.0/bin
-```
-
-Then run this:
-
-```bash
-./elasticsearch
-```
-
-=======================
-
-For kibana go to this directory:
-
-```bash
-cd /home/kibana-8.12.0/bin
-```
-
-Then run this:
-
-```bash
-./kibana
-```
-
-========================
-
-You might encounter an error when running Kibana, try this:
-
-```bash
-sudo ./kibana --allow-root
-```
-
-(P.S. This error only came once for me)
-
-========================
-
-For logstash go to this directory:
-
-```bash
-cd /home/logstash-8.12.0
-```
-
-Then run this:
-
-```bash
-bin/logstash -e 'input{stdin{}} output{stdout{}}'
+docker compose down
 ```
